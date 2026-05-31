@@ -1,0 +1,99 @@
+package models
+
+import (
+	"fmt"
+	"sync/atomic"
+	"time"
+)
+
+var accountIDCounter uint64 = uint64(time.Now().UnixNano() % 10000000000)
+
+type CreateAccountRequest struct {
+	AccountHolder    string  `json:"accountHolder"`
+	InitiationAmount float64 `json:"initiationAmount"`
+	Currency         string  `json:"currency"`
+}
+
+type WithdrawRequest struct {
+	AccountID      string  `json:"accountId"`
+	Amount         float64 `json:"amount"`
+	Currency       string  `json:"currency"`
+	IdempotencyKey string  `json:"idempotencyKey"`
+}
+
+
+type DepositRequest struct {
+	AccountID      string  `json:"accountId"`
+	Amount         float64 `json:"amount"`
+	Currency       string  `json:"currency"`
+	IdempotencyKey string  `json:"idempotencyKey"`
+}
+
+type Amount struct {
+	Value    float64 `json:"value"`
+	Currency string  `json:"currency"`
+}
+
+type Account struct {
+	AccountHolder string  `json:"accountHolder"`
+	AccountID     string  `json:"accountId"`
+	Balance       float64 `json:"balance"`
+	Currency      string  `json:"currency"`
+}
+
+// Getters for WithdrawRequest
+
+func (wr *WithdrawRequest) GetAccountID() string {
+	return wr.AccountID
+}
+
+func (wr *WithdrawRequest) GetAmount() float64 {
+	return wr.Amount
+}
+
+func (wr *WithdrawRequest) GetCurrency() string {
+	return wr.Currency
+}
+
+func (wr *WithdrawRequest) GetIdempotencyKey() string {
+	return wr.IdempotencyKey
+}
+
+// Getters for Account
+
+func (a *Account) GetAccountID() string {
+	return a.AccountID
+}
+
+func (a *Account) GetBalance() float64 {
+	return a.Balance
+}
+
+func (a *Account) GetCurrency() string {
+	return a.Currency
+}
+
+func (a *Account) GetAccountHolder() string {
+	return a.AccountHolder
+}
+
+// Setters for Account
+
+func (a *Account) SetBalance(newBalance float64) {
+	a.Balance = newBalance
+}
+
+func NewAccount(req CreateAccountRequest) *Account {
+
+	return &Account{
+		AccountHolder: req.AccountHolder,
+		Balance:       req.InitiationAmount,
+		Currency:      req.Currency,
+		AccountID:     generateAccountID(),
+	}
+}
+
+func generateAccountID() string {
+	accountID := atomic.AddUint64(&accountIDCounter, 1) % 10000000000
+	return fmt.Sprintf("%010d", accountID)
+}
