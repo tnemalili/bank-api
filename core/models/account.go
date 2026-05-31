@@ -21,7 +21,6 @@ type WithdrawRequest struct {
 	IdempotencyKey string  `json:"idempotencyKey"`
 }
 
-
 type DepositRequest struct {
 	AccountID      string  `json:"accountId"`
 	Amount         float64 `json:"amount"`
@@ -35,8 +34,9 @@ type Amount struct {
 }
 
 type Account struct {
+	ID            string  `json:"id" gorm:"primaryKey"`
 	AccountHolder string  `json:"accountHolder"`
-	AccountID     string  `json:"accountId"`
+	AccountNumber string  `json:"accountNumber"`
 	Balance       float64 `json:"balance"`
 	Currency      string  `json:"currency"`
 }
@@ -62,7 +62,7 @@ func (wr *WithdrawRequest) GetIdempotencyKey() string {
 // Getters for Account
 
 func (a *Account) GetAccountID() string {
-	return a.AccountID
+	return a.ID
 }
 
 func (a *Account) GetBalance() float64 {
@@ -83,13 +83,14 @@ func (a *Account) SetBalance(newBalance float64) {
 	a.Balance = newBalance
 }
 
-func NewAccount(req CreateAccountRequest) *Account {
+func NewAccount(req CreateAccountRequest) Account {
 
-	return &Account{
+	return Account{
+		ID:            generateAccountID(),
 		AccountHolder: req.AccountHolder,
 		Balance:       req.InitiationAmount,
 		Currency:      req.Currency,
-		AccountID:     generateAccountID(),
+		AccountNumber: generateAccountID(),
 	}
 }
 

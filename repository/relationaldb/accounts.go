@@ -1,6 +1,9 @@
 package relationaldb
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/sftx/bank-api/core/models"
 	"github.com/sftx/bank-api/core/ports"
 	"gorm.io/gorm"
@@ -12,8 +15,8 @@ type accountManager struct {
 
 // SetBalance implements [ports.IAccountsRepository].
 func (am *accountManager) SetBalance(accountID string, newBalance float64) error {
-	var account models.Account
-	if err := am.dbClient.First(&account, "id = ?", accountID).Error; err != nil {
+	account, err := am.findAccountByIdentifier(accountID)
+	if err != nil {
 		return err
 	}
 	account.SetBalance(newBalance)
@@ -35,12 +38,36 @@ func (am *accountManager) CreateAccount(req models.Account) (models.Account, err
 
 // GetAccount implements [ports.IAccountsRepository].
 func (am *accountManager) GetAccount(accountID string) (models.Account, error) {
-	var account models.Account
-	if err := am.dbClient.First(&account, "id = ?", accountID).Error; err != nil {
+	account, err := am.findAccountByIdentifier(accountID)
+	if err != nil {
 		return models.Account{}, err
 	}
-	
+
 	return account, nil
+}
+
+func (am *accountManager) findAccountByIdentifier(accountID string) (models.Account, error) {
+	var account models.Account
+
+	err := am.dbClient.Where("id = ? OR account_number = ?", accountID, accountID).First(&account).Error
+	if err == nil {
+		return account, nil
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return models.Account{}, err
+	}
+
+	legacyErr := am.dbClient.Where("account_id = ?", accountID).First(&account).Error
+	if legacyErr == nil {
+		return account, nil
+	}
+
+	if strings.Contains(legacyErr.Error(), "no such column") {
+		return models.Account{}, err
+	}
+
+	return models.Account{}, legacyErr
 }
 
 func NewAccountManager(dbClient *gorm.DB) *accountManager {
