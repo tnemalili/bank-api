@@ -59,6 +59,24 @@ func (wr *WithdrawRequest) GetIdempotencyKey() string {
 	return wr.IdempotencyKey
 }
 
+// Getters for DepositRequest
+
+func (dr *DepositRequest) GetAccountID() string {
+	return dr.AccountID
+}
+
+func (dr *DepositRequest) GetAmount() float64 {
+	return dr.Amount
+}
+
+func (dr *DepositRequest) GetCurrency() string {
+	return dr.Currency
+}
+
+func (dr *DepositRequest) GetIdempotencyKey() string {
+	return dr.IdempotencyKey
+}
+
 // Getters for Account
 
 func (a *Account) GetAccountID() string {

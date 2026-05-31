@@ -13,7 +13,32 @@ type transactionManager struct {
 
 // Deposit implements [ports.ITransactionsRepository].
 func (t *transactionManager) Deposit(req models.DepositRequest) models.DepositResult {
-	panic("unimplemented")
+	account, err := t.accountRepo.GetAccount(req.AccountID)
+
+	if err != nil {
+		return models.DepositResult{
+			Status:  "failed",
+			Message: "Account not found",
+		}
+	}
+
+	account.SetBalance(account.GetBalance() + req.GetAmount())
+
+	err = t.dbClient.Save(&account).Error
+
+	if err != nil {
+		return models.DepositResult{
+			Status:  "failed",
+			Success: false,
+			Message: "Failed to update account balance",
+		}
+	}
+
+	return models.DepositResult{
+		Status:  "success",
+		Success: true,
+		Message: "Deposit successful",
+	}
 }
 
 // Withdraw implements [ports.ITransactionsRepository].

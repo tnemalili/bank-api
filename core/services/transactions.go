@@ -12,7 +12,8 @@ type TransactionsService struct {
 
 // Deposit implements [ports.ITransactionsService].
 func (t *TransactionsService) Deposit(req models.DepositRequest) models.DepositResult {
-	panic("unimplemented")
+	
+	return t.repo.Deposit(req)
 }
 
 // Withdraw implements [ports.ITransactionsService].
