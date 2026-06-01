@@ -37,6 +37,7 @@ func (t *transactionManager) Deposit(req models.DepositRequest) models.Transacti
 			Currency: req.GetCurrency(),
 			Status:  "failed",
 			Message: "Failed to update account balance",
+			Success: false,
 		})
 	}
 
@@ -46,6 +47,7 @@ func (t *transactionManager) Deposit(req models.DepositRequest) models.Transacti
 		NewBalance: newBalance,
 		Status:  "success",
 		Message: "Deposit successful",
+		Success: true,
 	})
 }
 
@@ -67,8 +69,10 @@ func (t *transactionManager) Withdraw(req models.WithdrawRequest) models.Transac
 		return models.NewTransactionResult(models.TransactionEvent{
 			Amount:   req.GetAmount(),
 			Currency: req.GetCurrency(),
+			NewBalance: account.GetBalance(),
 			Status:  "failed",
 			Message: "Insufficient funds",
+
 		})
 	}
 
@@ -81,8 +85,10 @@ func (t *transactionManager) Withdraw(req models.WithdrawRequest) models.Transac
 		return models.NewTransactionResult(models.TransactionEvent{
 			Amount:   req.GetAmount(),
 			Currency: req.GetCurrency(),
+			NewBalance: account.GetBalance(),
 			Status:  "failed",
 			Message: "Failed to update account balance",
+			Success: false,
 		})
 	}
 
@@ -92,6 +98,7 @@ func (t *transactionManager) Withdraw(req models.WithdrawRequest) models.Transac
 		NewBalance: newBalance,
 		Status:  "success",
 		Message: "Withdrawal successful",
+		Success: true,
 	})
 }
 

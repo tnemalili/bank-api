@@ -18,6 +18,7 @@ type TransactionEvent struct {
 	Status     string  `json:"status"`
 	Replayed   bool    `json:"replayed"`
 	Message    string  `json:"message"`
+	Success    bool    `json:"success"`
 }
 
 type TransactionResult struct {
@@ -62,7 +63,7 @@ func NewTransactionResult(event TransactionEvent) TransactionResult {
 		Status:    event.Status,
 		Message:   event.Message,
 		CreatedAt: time.Now(),
-		Success:   true,
+		Success:   event.Success,
 	}
 }
 
