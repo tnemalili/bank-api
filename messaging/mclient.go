@@ -22,6 +22,7 @@ func (c *messagingClient) Publish(topic string, event any) error {
 	if err != nil {
 		return err
 	}
+	log.Infof("Publishing message to SNS topic %s: %s", topic, string(message))
 	// Publish the message to the specified SNS topic
 	pubOutput, err := c.snsClient.Publish(context.TODO(), &sns.PublishInput{
 		Message:  aws.String(string(message)),
@@ -45,12 +46,14 @@ func NewMessagingClient() *messagingClient {
 	if region == "" {
 		region = "us-east-1"
 	}
-
+	// Load the AWS shared configuration (~/.aws/config)
+	// This will automatically pick up credentials from the environment 
+	// or the shared credentials file
 	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
 	if err != nil {
 		log.Errorf("Failed to load SDK configuration, %v", err)
 	}
-
+	log.Infof("AWS SDK configuration loaded successfully for region %s", region)
 	// Create an Amazon SNS client
 	snsClient := sns.NewFromConfig(cfg)
 

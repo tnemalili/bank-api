@@ -27,6 +27,7 @@ func (a *AccountsHandler) CreateAccount(ctx *fiber.Ctx) error {
 		errMsg := "failed to create account"
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": errMsg})
 	}
+	// Account created successfully, return 201 with account details
 	return ctx.Status(fiber.StatusCreated).JSON(acc)
 }
 
@@ -43,6 +44,7 @@ func (a *AccountsHandler) GetAccount(ctx *fiber.Ctx) error {
 		errMsg := "failed to retrieve account"
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": errMsg})
 	}
+	// Account retrieved successfully, return 200 with account details
 	return ctx.JSON(acc)
 }
 

@@ -4,6 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sftx/bank-api/core/models"
 	"github.com/sftx/bank-api/core/ports"
+	"github.com/sftx/bank-api/messaging"
+	log "github.com/sirupsen/logrus"
 )
 
 type TransactionsHandler struct {
@@ -21,6 +23,14 @@ func (t *TransactionsHandler) HandleDepositRequest(ctx *fiber.Ctx) error {
 	}
 	
 	result := t.service.Deposit(req)
+	// Send transation event
+	newMessagingClient := messaging.NewMessagingClient()
+	// Publish the transaction event asynchronously to avoid blocking the response
+	go func() {
+		if err := newMessagingClient.Publish("transaction-topic", result); err != nil {
+			log.Errorf("Failed to publish transaction event: %v", err)
+		}
+	}()
 	return ctx.JSON(result)
 }
 
@@ -35,6 +45,14 @@ func (t *TransactionsHandler) HandleWithdrawRequest(ctx *fiber.Ctx) error {
 	}
 	
 	result := t.service.Withdraw(req)
+	// Send transation event
+	newMessagingClient := messaging.NewMessagingClient()
+	// Publish the transaction event asynchronously to avoid blocking the response
+	go func() {
+		if err := newMessagingClient.Publish("transaction-topic", result); err != nil {
+			log.Errorf("Failed to publish transaction event: %v", err)
+		}
+	}()
 	return ctx.JSON(result)	
 }
 
