@@ -32,7 +32,8 @@ This API helps with simple bank account operations:
 
 ### Important note
 
-This project is currently a development-oriented API and not a production banking core. Some enterprise controls (strong auth, full auditing, retries, ledger reconciliation) are not fully implemented yet.
+This project is currently a development-oriented API and not a production banking core.
+Some enterprise controls (strong auth, full auditing, retries, ledger reconciliation) are not fully implemented yet.
 
 ## For Technical Readers
 
@@ -237,10 +238,10 @@ docker run --rm -p 3540:3540 \
 
 ## Quick glossary
 
-- Account ID: internal account identifier.
-- Account Number: secondary identifier used in account retrieval compatibility logic.
-- Idempotency key: a request key intended to prevent duplicate processing.
-- SNS: AWS service for publishing events/messages.
+- **Account ID:** internal account identifier.
+- **Account Number:** secondary identifier (same as Account ID) used in account retrieval compatibility logic.
+- **Idempotency key:** a request key intended to prevent duplicate processing.
+- **SNS:** AWS service for publishing events/messages.
 
 `
 @copyright: Tshakule Nemalili tnemalili@gmail.com +27735845995`
