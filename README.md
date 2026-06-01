@@ -235,6 +235,7 @@ docker run --rm -p 3540:3540 \
 - No distributed lock or transaction ledger model.
 - SNS topic should be environment-configured as full ARN.
 - Input validation can be expanded (currency rules, positive amount checks).
+- Observability Telemetry.
 
 ## Quick glossary
 
@@ -243,4 +244,4 @@ docker run --rm -p 3540:3540 \
 - **Idempotency key:** a request key intended to prevent duplicate processing.
 - **SNS:** AWS service for publishing events/messages.
 
-@copyright: Tshakule Nemalili  tnemalili@gmail.com +2773-5845-995
+@copyright: Tshakule Nemalili tnemalili@gmail.com +2773-5845-995
