@@ -32,7 +32,9 @@ func (c *messagingClient) Publish(topic string, event any) error {
 		log.Printf("failed to publish message to SNS topic %s: %v", topic, err)
 		return err
 	}
-	log.Printf("message published to SNS topic %s with message ID %s", topic, *pubOutput.MessageId)
+
+	log.Infof("Message published to SNS topic %s with message ID %s", topic, *pubOutput.MessageId)
+	
 	return nil
 }
 
