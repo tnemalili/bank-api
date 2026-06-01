@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/sftx/bank-api/core/models"
 	"github.com/sftx/bank-api/core/ports"
@@ -49,7 +51,8 @@ func (t *TransactionsHandler) HandleWithdrawRequest(ctx *fiber.Ctx) error {
 	newMessagingClient := messaging.NewMessagingClient()
 	// Publish the transaction event asynchronously to avoid blocking the response
 	go func() {
-		if err := newMessagingClient.Publish("transaction-topic", result); err != nil {
+		transactionTopic := os.Getenv("TRANSACTION_TOPIC")
+		if err := newMessagingClient.Publish(transactionTopic, result); err != nil {
 			log.Errorf("Failed to publish transaction event: %v", err)
 		}
 	}()

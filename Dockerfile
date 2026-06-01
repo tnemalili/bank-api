@@ -23,7 +23,9 @@ WORKDIR /home/noroot/app
 ENV API_PORT=3540 \
   API_VERSION=v1 \
   DB_HOST=/tmp/bank.db \
-  AWS_REGION=us-east-1
+  AWS_REGION=us-east-1 \
+  TRANSACTION_TOPIC="arn:aws:sns:us-east-1:123456789012:TransactionNotifications" \
+  AWS_SHARED_CREDENTIALS_FILE="/path/to/credentials"
 
 COPY --from=builder /build/bank-api /home/noroot/app/
 
