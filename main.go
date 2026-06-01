@@ -27,5 +27,5 @@ func main() {
 	// Server
 	newServer := server.NewServer(accountsHandler, transactionsHandler)
 	err := newServer.Serve()
-	log.Infof(err.Error())
+	log.Info(err.Error())
 }
