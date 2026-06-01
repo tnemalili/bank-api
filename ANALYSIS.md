@@ -1,8 +1,7 @@
 # Code Analysis for the  Bank Account Withdrawal
 
 This document describes **what the original Java snippet does**, then catalogues the
-defects and design weaknesses found in it, mapped to the quality attributes called
-out in the exercise brief.
+defects and design weaknesses found in it.
 
 ## 1. What the code is supposed to do (business capability)
 
