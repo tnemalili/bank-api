@@ -34,7 +34,7 @@ func (t *TransactionsHandler) HandleDepositRequest(ctx *fiber.Ctx) error {
 			log.Errorf("Failed to publish transaction event: %v", err)
 		}
 	}()
-	return ctx.JSON(result)
+	return ctx.Status(result.GetStatusCode()).JSON(result)
 }
 
 // HandleWithdrawRequest implements [ports.ITransactionsHandler].
@@ -57,7 +57,8 @@ func (t *TransactionsHandler) HandleWithdrawRequest(ctx *fiber.Ctx) error {
 			log.Errorf("Failed to publish transaction event: %v", err)
 		}
 	}()
-	return ctx.JSON(result)	
+	
+	return ctx.Status(result.GetStatusCode()).JSON(result)
 }
 
 func NewTransactionsHandler(service ports.ITransactionsService) *TransactionsHandler {

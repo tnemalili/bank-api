@@ -5,6 +5,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sftx/bank-api/core/models"
 	"github.com/sftx/bank-api/core/ports"
+	"github.com/sftx/bank-api/messaging"
+	"os"
+	log "github.com/sirupsen/logrus"
 )
 
 type AccountsHandler struct {
@@ -28,6 +31,14 @@ func (a *AccountsHandler) CreateAccount(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": errMsg})
 	}
 	// Account created successfully, return 201 with account details
+	newMessagingClient := messaging.NewMessagingClient()
+	// Publish the account creation event asynchronously to avoid blocking the response
+	go func() {
+		accountTopic := os.Getenv("ACCOUNTS_TOPIC")
+		if err := newMessagingClient.Publish(accountTopic, acc); err != nil {
+			log.Errorf("Failed to publish account creation event: %v", err)
+		}
+	}()
 	return ctx.Status(fiber.StatusCreated).JSON(acc)
 }
 

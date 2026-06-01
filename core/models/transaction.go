@@ -5,11 +5,6 @@ import (
 	"time"
 )
 
-type MessageEvent struct {
-	Message string `json:"message"`
-	Topic   string `json:"topicArn"`
-}
-
 type TransactionEvent struct {
 	Currency   string  `json:"currency"`
 	Amount     float64 `json:"amount"`
@@ -19,6 +14,7 @@ type TransactionEvent struct {
 	Replayed   bool    `json:"replayed"`
 	Message    string  `json:"message"`
 	Success    bool    `json:"success"`
+	StatusCode int     `json:"statusCode"` // true if this was a duplicate idempotency key
 }
 
 type TransactionResult struct {
@@ -29,23 +25,18 @@ type TransactionResult struct {
 	Status     string    `json:"status"`
 	Message    string    `json:"message"`
 	CreatedAt  time.Time `json:"createdAt"`
-	Success    bool      `json:"success"` // true if this was a duplicate idempotency key
-}
-
-type DepositResult struct {
-	NewBalance Amount    `json:"newBalance" gorm:"embedded"`
-	EventID    string    `json:"eventId"`
-	Replayed   bool      `json:"replayed"`
-	Status     string    `json:"status"`
-	Message    string    `json:"message"`
-	CreatedAt  time.Time `json:"createdAt"`
-	Success    bool      `json:"success"` // true if this was a duplicate idempotency key
+	Success    bool      `json:"success"`
+	StatusCode int       `json:"statusCode"` // true if this was a duplicate idempotency key
 }
 
 func (e TransactionResult) toJSON() string {
-	// BUG M5: fragile manual JSON, no escaping, amount quoted as a string.
+	// BUG Major-5: fragile manual JSON, no escaping, amount quoted as a string.
 	return fmt.Sprintf(`{"newBalance":{"value":"%f","currency":"%s"},"eventId":"%s","replayed":%t,"status":"%s","message":"%s","createdAt":"%s","success":%t}`,
 		e.NewBalance.Value, e.NewBalance.Currency, e.EventID, e.Replayed, e.Status, e.Message, e.CreatedAt.Format(time.RFC3339), e.Success)
+}
+
+func (r *TransactionResult) GetStatusCode() int {
+	return r.StatusCode
 }
 
 func NewTransactionResult(event TransactionEvent) TransactionResult {
@@ -64,12 +55,6 @@ func NewTransactionResult(event TransactionEvent) TransactionResult {
 		Message:   event.Message,
 		CreatedAt: time.Now(),
 		Success:   event.Success,
-	}
-}
-
-func NewMessageEvent(message, topic string) MessageEvent {
-	return MessageEvent{
-		Message: message,
-		Topic:   topic,
+		StatusCode: event.StatusCode,
 	}
 }
