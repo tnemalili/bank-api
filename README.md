@@ -241,3 +241,6 @@ docker run --rm -p 3540:3540 \
 - Account Number: secondary identifier used in account retrieval compatibility logic.
 - Idempotency key: a request key intended to prevent duplicate processing.
 - SNS: AWS service for publishing events/messages.
+
+`
+@copyright: Tshakule Nemalili tnemalili@gmail.com +27735845995`
