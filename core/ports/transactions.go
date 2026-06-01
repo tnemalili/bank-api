@@ -11,11 +11,11 @@ type ITransactionsHandler interface {
 }
 
 type ITransactionsService interface {
-	Withdraw(req models.WithdrawRequest) models.WithdrawalResult
-	Deposit(req models.DepositRequest) models.DepositResult
+	Withdraw(req models.WithdrawRequest) models.TransactionResult
+	Deposit(req models.DepositRequest) models.TransactionResult
 }
 
 type ITransactionsRepository interface {
-	Withdraw(req models.WithdrawRequest) models.WithdrawalResult
-	Deposit(req models.DepositRequest) models.DepositResult
+	Withdraw(req models.WithdrawRequest) models.TransactionResult
+	Deposit(req models.DepositRequest) models.TransactionResult
 }

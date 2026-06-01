@@ -11,13 +11,13 @@ type TransactionsService struct {
 }
 
 // Deposit implements [ports.ITransactionsService].
-func (t *TransactionsService) Deposit(req models.DepositRequest) models.DepositResult {
+func (t *TransactionsService) Deposit(req models.DepositRequest) models.TransactionResult {
 	
 	return t.repo.Deposit(req)
 }
 
 // Withdraw implements [ports.ITransactionsService].
-func (t *TransactionsService) Withdraw(req models.WithdrawRequest) models.WithdrawalResult {
+func (t *TransactionsService) Withdraw(req models.WithdrawRequest) models.TransactionResult {
 
 	return t.repo.Withdraw(req)
 }

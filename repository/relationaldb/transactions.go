@@ -12,76 +12,91 @@ type transactionManager struct {
 }
 
 // Deposit implements [ports.ITransactionsRepository].
-func (t *transactionManager) Deposit(req models.DepositRequest) models.DepositResult {
+func (t *transactionManager) Deposit(req models.DepositRequest) models.TransactionResult {
+	
 	account, err := t.accountRepo.GetAccount(req.AccountID)
 
 	if err != nil {
-		return models.DepositResult{
+		return models.NewTransactionResult(models.TransactionEvent{
+			Amount:   req.GetAmount(),
+			Currency: req.GetCurrency(),
 			Status:  "failed",
 			Message: "Account not found",
-		}
+		})
 	}
 
-	account.SetBalance(account.GetBalance() + req.GetAmount())
+	newBalance := account.GetBalance() + req.GetAmount()
+	
+	account.SetBalance(newBalance)
 
 	err = t.dbClient.Save(&account).Error
 
 	if err != nil {
-		return models.DepositResult{
+		return models.NewTransactionResult(models.TransactionEvent{
+			Amount:   req.GetAmount(),
+			Currency: req.GetCurrency(),
 			Status:  "failed",
-			Success: false,
 			Message: "Failed to update account balance",
-		}
+		})
 	}
 
-	return models.DepositResult{
+	return models.NewTransactionResult(models.TransactionEvent{
+		Amount:   req.GetAmount(),
+		Currency: req.GetCurrency(),
+		NewBalance: newBalance,
 		Status:  "success",
-		Success: true,
 		Message: "Deposit successful",
-	}
+	})
 }
 
 // Withdraw implements [ports.ITransactionsRepository].
-func (t *transactionManager) Withdraw(req models.WithdrawRequest) models.WithdrawalResult {
+func (t *transactionManager) Withdraw(req models.WithdrawRequest) models.TransactionResult {
 
 	account, err := t.accountRepo.GetAccount(req.AccountID)
 
 	if err != nil {
-		return models.WithdrawalResult{
+		return models.NewTransactionResult(models.TransactionEvent{
+			Amount:   req.GetAmount(),
+			Currency: req.GetCurrency(),
 			Status:  "failed",
 			Message: "Account not found",
-		}
+		})
 	}
 
 	if account.GetBalance() < req.GetAmount() {
-		return models.WithdrawalResult{
+		return models.NewTransactionResult(models.TransactionEvent{
+			Amount:   req.GetAmount(),
+			Currency: req.GetCurrency(),
 			Status:  "failed",
-			Success: false,
 			Message: "Insufficient funds",
-		}
+		})
 	}
 
-	account.SetBalance(account.GetBalance() - req.GetAmount())
+	newBalance := account.GetBalance() - req.GetAmount()
+	account.SetBalance(newBalance)
 
 	err = t.dbClient.Save(&account).Error
 
 	if err != nil {
-		return models.WithdrawalResult{
+		return models.NewTransactionResult(models.TransactionEvent{
+			Amount:   req.GetAmount(),
+			Currency: req.GetCurrency(),
 			Status:  "failed",
-			Success: false,
 			Message: "Failed to update account balance",
-		}
+		})
 	}
 
-	return models.WithdrawalResult{
+	return models.NewTransactionResult(models.TransactionEvent{
+		Amount:   req.GetAmount(),
+		Currency: req.GetCurrency(),
+		NewBalance: newBalance,
 		Status:  "success",
-		Success: true,
 		Message: "Withdrawal successful",
-	}
+	})
 }
 
 func NewTransactionManager(accountRepo ports.IAccountsRepository, dbClient *gorm.DB) *transactionManager {
-	dbClient.AutoMigrate(&models.WithdrawalResult{})
+	dbClient.AutoMigrate(&models.TransactionResult{})
 	return &transactionManager{accountRepo: accountRepo, dbClient: dbClient}
 }
 
